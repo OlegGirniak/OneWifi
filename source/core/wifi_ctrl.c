@@ -1736,7 +1736,7 @@ int init_vap_11be_params()
             if (strncmp((char *)hal_vap_info_map.vap_array[j].vap_name, "mesh_sta", strlen("mesh_sta")) == 0) 
             {
                 vap->u.sta_info.mld_info.common_info.mld_id = hal_vap_info_map.vap_array[j].u.sta_info.mld_info.common_info.mld_id;
-                vap->u.sta_info.mld_info.common_info.link_id = hal_vap_info_map.vap_array[j].u.sta_info.mld_info.common_info.link_id;
+                vap->u.sta_info.mld_info.common_info.mld_link_id = hal_vap_info_map.vap_array[j].u.sta_info.mld_info.common_info.mld_link_id;
                 memcpy(vap->u.sta_info.mld_info.common_info.mld_addr, hal_vap_info_map.vap_array[j].u.sta_info.mld_info.common_info.mld_addr, sizeof(vap->u.sta_info.mld_info.common_info.mld_addr));
                 wifi_util_dbg_print(WIFI_CTRL,"%s:%d: vapindex %d vap_name : %s mld_id : %u MLDMac address : %02X:%02X:%02X:%02X:%02X:%02X\n",__func__, __LINE__,
                         vap->vap_index,
@@ -1753,7 +1753,7 @@ int init_vap_11be_params()
             else 
             {
                 vap->u.bss_info.mld_info.common_info.mld_id = hal_vap_info_map.vap_array[j].u.bss_info.mld_info.common_info.mld_id;
-                vap->u.bss_info.mld_info.common_info.link_id = hal_vap_info_map.vap_array[j].u.bss_info.mld_info.common_info.link_id;
+                vap->u.bss_info.mld_info.common_info.mld_link_id = hal_vap_info_map.vap_array[j].u.bss_info.mld_info.common_info.mld_link_id;
                 memcpy(vap->u.bss_info.mld_info.common_info.mld_addr, hal_vap_info_map.vap_array[j].u.bss_info.mld_info.common_info.mld_addr, sizeof(vap->u.bss_info.mld_info.common_info.mld_addr));
                 wifi_util_dbg_print(WIFI_CTRL,"%s:%d: vapindex %d vap_name : %s mld_id : %u MLDMac address : %02X:%02X:%02X:%02X:%02X:%02X\n",__func__, __LINE__,
                         vap->vap_index,

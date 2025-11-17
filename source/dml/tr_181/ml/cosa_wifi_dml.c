@@ -773,19 +773,24 @@ AffiliatedAP_GetParamUlongValue
         ULONG*                      puLong
     )
 {
-    ULLONG vap_index = (ULONG)hInsContext - 1;
+    ULONG vap_index = (ULONG)hInsContext - 1;
 
     wifi_vap_info_t *vap = (wifi_vap_info_t *)get_dml_vap_parameters(vap_index);
+
+    if (vap == NULL) {
+        wifi_util_dbg_print(WIFI_DMCLI,"%s:%d: vap is NULL\n", __func__, __LINE__);
+        return FALSE;
+    }
 
     if (AnscEqualString(ParamName, "LinkID", TRUE))
     {
         if (isVapSTAMesh(vap_index))
         {
-            *puLong = vap->u.sta_info.mld_info.common_info.link_id;
+            *puLong = vap->u.sta_info.mld_info.common_info.mld_link_id;
             return TRUE;
         }
 
-        *puLong = vap->u.bss_info.mld_info.common_info.link_id;
+        *puLong = vap->u.bss_info.mld_info.common_info.mld_link_id;
 
         return TRUE;
     }
@@ -807,9 +812,14 @@ AffiliatedAP_GetParamStringValue
         ULONG*                      pUlSize
     )
 {
-    ULLONG vap_index = (ULONG)hInsContext - 1;
+    ULONG vap_index = (ULONG)hInsContext - 1;
 
     wifi_vap_info_t *vap = (wifi_vap_info_t *)get_dml_vap_parameters(vap_index);
+
+    if (vap == NULL) {
+        wifi_util_dbg_print(WIFI_DMCLI,"%s:%d: vap is NULL\n", __func__, __LINE__);
+        return FALSE;
+    }
 
     if (AnscEqualString(ParamName, "BSSID", TRUE))
     {
