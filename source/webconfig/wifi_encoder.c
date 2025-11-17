@@ -509,6 +509,24 @@ webconfig_error_t encode_vap_common_object(const wifi_vap_info_t *vap_info,
 
     cJSON_AddBoolToObject(vap_object, "MboEnabled", vap_info->u.bss_info.mbo_enabled);
 
+    // 11be params
+    uint8_mac_to_string_mac((uint8_t *)vap_info->u.bss_info.mld_info.common_info.mld_addr, mld_mac_str);
+    cJSON_AddStringToObject(vap_object, "MLDMACAddress", mld_mac_str);
+    cJSON_AddNumberToObject(vap_object, "MldId", vap_info->u.bss_info.mld_info.common_info.mld_id);
+    cJSON_AddNumberToObject(vap_object, "LinkId", vap_info->u.bss_info.mld_info.common_info.link_id);
+
+    wifi_util_dbg_print(WIFI_WEBCONFIG,"%s:%d: vapindex %d vap_name : %s mld_id : %u MLDMac address : %02X:%02X:%02X:%02X:%02X:%02X\n",__func__, __LINE__,
+        vap_info->vap_index,
+        vap_info->vap_name,
+        vap_info->u.bss_info.mld_info.common_info.mld_id,
+        vap_info->u.bss_info.mld_info.common_info.mld_addr[0],
+        vap_info->u.bss_info.mld_info.common_info.mld_addr[1],
+        vap_info->u.bss_info.mld_info.common_info.mld_addr[2],
+        vap_info->u.bss_info.mld_info.common_info.mld_addr[3],
+        vap_info->u.bss_info.mld_info.common_info.mld_addr[4],
+        vap_info->u.bss_info.mld_info.common_info.mld_addr[5]
+    );
+
     memset(extra_vendor_ies_hex_str, 0, sizeof(extra_vendor_ies_hex_str));
     for (unsigned int i = 0; i < vap_info->u.bss_info.vendor_elements_len; i++) {
         sprintf(extra_vendor_ies_hex_str + (i * 2), "%02x", (unsigned int) vap_info->u.bss_info.vendor_elements[i]);

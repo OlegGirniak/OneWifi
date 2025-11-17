@@ -1688,6 +1688,90 @@ int init_wireless_interface_mac()
     }
     return RETURN_OK;
 }
+
+int init_vap_11be_params()
+{
+    unsigned int radio_index = 0;
+    unsigned int j = 0;
+    unsigned int k = 0;
+    int ret = RETURN_OK;
+    wifi_vap_info_map_t  hal_vap_info_map;
+    wifi_vap_info_t *vap = NULL;
+    wifi_vap_info_map_t *mgr_vap_info_map = NULL;
+
+    for (radio_index = 0; radio_index < getNumberRadios(); radio_index++) 
+    {
+        memset(&hal_vap_info_map, 0, sizeof(hal_vap_info_map));
+
+        //wifi_hal_getRadioVapInfoMap is used  to get the mldmacaddress of wireless interfaces
+        ret = wifi_hal_getRadioVapInfoMap(radio_index, &hal_vap_info_map);
+
+        if (ret != RETURN_OK) 
+        {
+            wifi_util_error_print(WIFI_CTRL,"RDK_LOG_ERROR, %s wifi_hal_getRadioVapInfoMap returned with error %d for radio : %d\n",
+                    __FUNCTION__, ret, radio_index);
+            return RETURN_ERR;
+        }
+
+        //get the mgr map_info_map
+        mgr_vap_info_map = get_wifidb_vap_map(radio_index);
+
+        if (mgr_vap_info_map == NULL) 
+        {
+            wifi_util_error_print(WIFI_CTRL,"RDK_LOG_ERROR, %s get_wifidb_vap_map returned with error %d for radio : %d\n",
+                    __FUNCTION__, ret, radio_index);
+            return RETURN_ERR;
+        }
+
+        for (j = 0; j < hal_vap_info_map.num_vaps; j++) 
+        {
+            for (k = 0; k < mgr_vap_info_map->num_vaps; k++) 
+            {
+                if (strncmp(hal_vap_info_map.vap_array[j].vap_name, mgr_vap_info_map->vap_array[k].vap_name, strlen(hal_vap_info_map.vap_array[j].vap_name)) == 0) {
+                    vap = &mgr_vap_info_map->vap_array[k];
+                    break;
+                }
+            }
+
+            if (strncmp((char *)hal_vap_info_map.vap_array[j].vap_name, "mesh_sta", strlen("mesh_sta")) == 0) 
+            {
+                vap->u.sta_info.mld_info.common_info.mld_id = hal_vap_info_map.vap_array[j].u.sta_info.mld_info.common_info.mld_id;
+                vap->u.sta_info.mld_info.common_info.link_id = hal_vap_info_map.vap_array[j].u.sta_info.mld_info.common_info.link_id;
+                memcpy(vap->u.sta_info.mld_info.common_info.mld_addr, hal_vap_info_map.vap_array[j].u.sta_info.mld_info.common_info.mld_addr, sizeof(vap->u.sta_info.mld_info.common_info.mld_addr));
+                wifi_util_dbg_print(WIFI_CTRL,"%s:%d: vapindex %d vap_name : %s mld_id : %u MLDMac address : %02X:%02X:%02X:%02X:%02X:%02X\n",__func__, __LINE__,
+                        vap->vap_index,
+                        vap->vap_name,
+                        hal_vap_info_map.vap_array[j].u.sta_info.mld_info.common_info.mld_id,
+                        vap->u.sta_info.mld_info.common_info.mld_addr[0],
+                        vap->u.sta_info.mld_info.common_info.mld_addr[1],
+                        vap->u.sta_info.mld_info.common_info.mld_addr[2],
+                        vap->u.sta_info.mld_info.common_info.mld_addr[3],
+                        vap->u.sta_info.mld_info.common_info.mld_addr[4],
+                        vap->u.sta_info.mld_info.common_info.mld_addr[5]
+                        );
+            } 
+            else 
+            {
+                vap->u.bss_info.mld_info.common_info.mld_id = hal_vap_info_map.vap_array[j].u.bss_info.mld_info.common_info.mld_id;
+                vap->u.bss_info.mld_info.common_info.link_id = hal_vap_info_map.vap_array[j].u.bss_info.mld_info.common_info.link_id;
+                memcpy(vap->u.bss_info.mld_info.common_info.mld_addr, hal_vap_info_map.vap_array[j].u.bss_info.mld_info.common_info.mld_addr, sizeof(vap->u.bss_info.mld_info.common_info.mld_addr));
+                wifi_util_dbg_print(WIFI_CTRL,"%s:%d: vapindex %d vap_name : %s mld_id : %u MLDMac address : %02X:%02X:%02X:%02X:%02X:%02X\n",__func__, __LINE__,
+                        vap->vap_index,
+                        vap->vap_name,
+                        hal_vap_info_map.vap_array[j].u.bss_info.mld_info.common_info.mld_id,
+                        vap->u.bss_info.mld_info.common_info.mld_addr[0],
+                        vap->u.bss_info.mld_info.common_info.mld_addr[1],
+                        vap->u.bss_info.mld_info.common_info.mld_addr[2],
+                        vap->u.bss_info.mld_info.common_info.mld_addr[3],
+                        vap->u.bss_info.mld_info.common_info.mld_addr[4],
+                        vap->u.bss_info.mld_info.common_info.mld_addr[5]
+                        );
+            }
+        }
+    }
+    return RETURN_OK;
+}
+
 int validate_and_sync_private_vap_credentials()
 {
     uint8_t num_of_radios = getNumberRadios();
@@ -1776,6 +1860,7 @@ int start_wifi_ctrl(wifi_ctrl_t *ctrl)
 
     init_wireless_interface_mac();
 
+    init_vap_11be_params();
 
     ctrl->webconfig_state = ctrl_webconfig_state_vap_all_cfg_rsp_pending;
     telemetry_bootup_time_wifibroadcast(); //Telemetry Marker for btime_wifibcast_split
@@ -2355,6 +2440,64 @@ wifi_radio_operationParam_t* get_wifidb_radio_map(uint8_t radio_index)
         wifi_util_error_print(WIFI_CTRL, "%s: wrong radio_index %d\n", __FUNCTION__, radio_index);
         return NULL;
     }
+}
+
+int get_vap_in_mld(unsigned int mld_id, unsigned int vap_id)
+{
+    switch (vap_id)
+    {
+        case 1:
+        case 2:
+            return mld_id * 2 + vap_id - 1;
+        case 3:
+            return mld_id + 16;
+        default:
+            return -1;
+    }
+
+    return -1;
+}
+
+int get_mld_addr_by_id(unsigned int apmld_index, char *mac)
+{
+    wifi_mgr_t *g_wifi_mgr = get_wifimgr_obj();
+    
+    for (int i = 0; i < MAX_NUM_RADIOS; ++i)
+    {
+        wifi_vap_info_t *vaps = g_wifi_mgr->radio_config[i].vaps.vap_map.vap_array;
+
+        for (int j = 0; j < MAX_NUM_VAP_PER_RADIO; ++j)
+        {
+            wifi_vap_info_t *vap_info = &vaps[j];
+
+            wifi_util_dbg_print(WIFI_CTRL,"%s:%d vapindex %d vap_name : %s MLDMac_id: %u apmld_index:%u\n", __func__, __LINE__, 
+                vap_info->vap_index,
+                vap_info->vap_name, 
+                vap_info->u.bss_info.mld_info.common_info.mld_id, 
+                apmld_index
+            );
+
+            if (vap_info->vap_mode == wifi_vap_mode_ap && vap_info->u.bss_info.mld_info.common_info.mld_id == apmld_index)
+            {
+                sprintf
+                (
+                    mac,
+                    "%02X:%02X:%02X:%02X:%02X:%02X",
+                    vap_info->u.bss_info.mld_info.common_info.mld_addr[0],
+                    vap_info->u.bss_info.mld_info.common_info.mld_addr[1],
+                    vap_info->u.bss_info.mld_info.common_info.mld_addr[2],
+                    vap_info->u.bss_info.mld_info.common_info.mld_addr[3],
+                    vap_info->u.bss_info.mld_info.common_info.mld_addr[4],
+                    vap_info->u.bss_info.mld_info.common_info.mld_addr[5]
+                );
+                wifi_util_dbg_print(WIFI_CTRL,"%s:%d mld_id: %u MLDMac 1 char:%c\n", __func__, __LINE__, apmld_index, vap_info->u.bss_info.mld_info.common_info.mld_addr[0]);
+                wifi_util_dbg_print(WIFI_CTRL,"%s:%d MLDMac:%s\n", __func__, __LINE__, mac);
+                return 0;
+            }
+        }
+    }
+
+    return -1;
 }
 
 wifi_radio_feature_param_t* get_wifidb_radio_feat_map(uint8_t radio_index)

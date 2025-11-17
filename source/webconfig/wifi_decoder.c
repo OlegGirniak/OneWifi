@@ -1810,6 +1810,28 @@ webconfig_error_t decode_vap_common_object(const cJSON *vap, wifi_vap_info_t *va
     decode_param_bool(vap, "MboEnabled", param);
     vap_info->u.bss_info.mbo_enabled = (param->type & cJSON_True) ? true : false;
 
+    // 11be params
+    decode_param_string(vap, "MLDMACAddress", param);
+    string_mac_to_uint8_mac(vap_info->u.bss_info.mld_info.common_info.mld_addr, param->valuestring);
+
+    decode_param_integer(vap, "MldId", param);
+    vap_info->u.bss_info.mld_info.common_info.mld_id = param->valuedouble;
+        
+    decode_param_integer(vap, "LinkId", param);
+    vap_info->u.bss_info.mld_info.common_info.link_id = param->valuedouble;
+
+    wifi_util_dbg_print(WIFI_WEBCONFIG,"%s:%d: vapindex %d vap_name : %s mld_id : %u MLDMac address : %02X:%02X:%02X:%02X:%02X:%02X\n",__func__, __LINE__,
+        vap_info->vap_index,
+        vap_info->vap_name,
+        vap_info->u.bss_info.mld_info.common_info.mld_id,
+        vap_info->u.bss_info.mld_info.common_info.mld_addr[0],
+        vap_info->u.bss_info.mld_info.common_info.mld_addr[1],
+        vap_info->u.bss_info.mld_info.common_info.mld_addr[2],
+        vap_info->u.bss_info.mld_info.common_info.mld_addr[3],
+        vap_info->u.bss_info.mld_info.common_info.mld_addr[4],
+        vap_info->u.bss_info.mld_info.common_info.mld_addr[5]
+    );
+
     // Hex Encoded ExtraVendorIEs
     decode_param_allow_empty_string(vap, "ExtraVendorIEs", param);
     extra_vendor_ies = param->valuestring;

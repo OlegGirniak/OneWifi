@@ -368,6 +368,8 @@ int convert_radio_index_to_radio_name(int index,char *name);
 wifi_global_param_t* get_wifidb_wifi_global_param(void);
 wifi_global_config_t* get_wifidb_wifi_global_config(void);
 wifi_radio_operationParam_t* get_wifidb_radio_map(uint8_t radio_index);
+int get_mld_addr_by_id(unsigned int apmld_index, char *mac);
+int get_vap_in_mld(unsigned int mld_id, unsigned int vap_id);
 wifi_radio_feature_param_t* get_wifidb_radio_feat_map(uint8_t radio_index);
 wifi_vap_info_map_t* get_wifidb_vap_map(uint8_t radio_index);
 wifi_GASConfiguration_t* get_wifidb_gas_config(void);
