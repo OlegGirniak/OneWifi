@@ -89,12 +89,6 @@
 #define ONEWIFI_DB_VERSION_UPDATE_MLD_FLAG 100042
 #define ONEWIFI_DB_VERSION_WPA3_T_DISABLE_FLAG 100043
 
-#ifdef CONFIG_NO_MLD_ONLY_PRIVATE
-#define MLD_UNIT_COUNT 8
-#else
-#define MLD_UNIT_COUNT 1
-#endif /* CONFIG_NO_MLD_ONLY_PRIVATE */
-
 ovsdb_table_t table_Wifi_Radio_Config;
 ovsdb_table_t table_Wifi_VAP_Config;
 ovsdb_table_t table_Wifi_Security_Config;

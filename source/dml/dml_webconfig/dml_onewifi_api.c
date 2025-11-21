@@ -32,6 +32,7 @@
 #include "wifi_util.h"
 #include "wifi_mgr.h"
 #include "wifi_stubs.h"
+#include "wifi_ctrl.h"
 
 webconfig_dml_t webconfig_dml;
 
@@ -1827,4 +1828,93 @@ bool wifi_factory_reset(bool factory_reset_all_vaps)
     }
     wifi_util_info_print(WIFI_DMCLI,"Exit %s:%d \n",__func__, __LINE__);
     return TRUE;
+}
+void create_mld_map(char* mld_map, int *mld_count)
+{
+    wifi_vap_info_map_t  hal_vap_info_map;
+    wifi_vap_info_map_t *mgr_vap_info_map = NULL;
+    unsigned int found_count = 0;
+
+    memset(mld_map, -1, MLD_UNIT_COUNT);
+
+    for (unsigned int r_idx = 0; r_idx < getNumberRadios(); r_idx++) {
+        memset(&hal_vap_info_map, 0, sizeof(hal_vap_info_map));
+
+        mgr_vap_info_map = get_wifidb_vap_map(r_idx);
+        if (mgr_vap_info_map == NULL) {
+            wifi_util_error_print(WIFI_DMCLI, "%s:%d get_wifidb_vap_map failed for radio: %d\n", __FUNCTION__, __LINE__, r_idx);
+            *mld_count = 0;
+            return;
+        }
+
+        for (unsigned int k = 0; k < mgr_vap_info_map->num_vaps; k++) {
+            wifi_vap_info_t *vap_config = &mgr_vap_info_map->vap_array[k];
+            wifi_mld_common_info_t *mld_info = &vap_config->u.bss_info.mld_info.common_info;
+
+            if (mld_info->mld_enable && mld_info->mld_id != 0) {
+                unsigned int id = mld_info->mld_id;
+
+                bool exists = false;
+                for (unsigned int x = 0; x < found_count; x++) {
+                    if ((unsigned int)mld_map[x] == id) {
+                        exists = true;
+                        break;
+                    }
+                }
+
+                if (!exists && found_count < MLD_UNIT_COUNT) {
+                    mld_map[found_count++] = (char)id;
+                }
+            }
+        }
+    }
+
+    *mld_count = found_count;
+}
+
+UINT get_total_num_apmld_dml()
+{
+    char mld_id_map[MLD_UNIT_COUNT] = {0};
+    int count;
+
+    create_mld_map(mld_id_map, &count);
+
+    return count;
+}
+
+UINT get_total_num_affiliated_ap_dml(UINT mld_id)
+{
+    wifi_vap_info_map_t  hal_vap_info_map;
+    wifi_vap_info_map_t *mgr_vap_info_map = NULL;
+    unsigned int r_idx=0;
+    unsigned int i = 0;
+    unsigned int k = 0;
+    UINT count = 0;
+
+    for (i = 0; i < MLD_UNIT_COUNT; i++) {
+
+        wifi_util_info_print(WIFI_DMCLI, "%s:%d: Count of APMLD %d\r\n", __func__, __LINE__, i);
+
+        for (r_idx=0; r_idx < getNumberRadios(); r_idx++) {
+            memset(&hal_vap_info_map, 0, sizeof(hal_vap_info_map));
+
+            mgr_vap_info_map = get_wifidb_vap_map(r_idx);
+            if (mgr_vap_info_map == NULL) {
+                wifi_util_error_print(WIFI_DMCLI, "%s:%d get_wifidb_vap_map failed for radio: %d\n",__FUNCTION__, __LINE__, r_idx);
+                return 0;
+            }
+            for (k = 0; k < mgr_vap_info_map->num_vaps; k++) {
+                wifi_vap_info_t *vap_config = &mgr_vap_info_map->vap_array[k];
+                wifi_mld_common_info_t *mld_info = NULL;
+
+                mld_info = &vap_config->u.bss_info.mld_info.common_info;
+
+                if (mld_info->mld_enable && mld_info->mld_id == mld_id) {
+                    ++count;
+                }
+            }
+        }
+    }
+
+    return count;
 }
