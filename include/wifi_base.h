@@ -87,6 +87,16 @@ extern "C" {
 #define WIFI_AP_MAX_WPSPIN_LEN  9
 #define MAX_BUF_LENGTH 128
 
+#ifndef MAX_NUM_MLD_LINKS
+#define MAX_NUM_MLD_LINKS 15
+#endif /*MAX_NUM_MLD_LINKS*/
+
+#ifdef CONFIG_NO_MLD_ONLY_PRIVATE
+#define MLD_UNIT_COUNT 8
+#else
+#define MLD_UNIT_COUNT 1
+#endif /* CONFIG_NO_MLD_ONLY_PRIVATE */
+
 #define ANAYLYTICS_PERIOD             60
 #define MAX_ASSOC_FRAME_REFRESH_PERIOD 30
 

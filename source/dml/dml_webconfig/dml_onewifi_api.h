@@ -123,6 +123,7 @@ void** get_acl_vap_context();
 UINT get_num_radio_dml();
 UINT get_total_num_affiliated_ap_dml();
 UINT get_total_num_apmld_dml();
+void create_mld_map(char* mld_map, int *mld_count);
 UINT get_total_num_vap_dml();
 void get_associated_devices_data(unsigned int radio_index);
 unsigned long get_associated_devices_count(wifi_vap_info_t *vap_info);
