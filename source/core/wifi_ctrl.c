@@ -2442,22 +2442,6 @@ wifi_radio_operationParam_t* get_wifidb_radio_map(uint8_t radio_index)
     }
 }
 
-int get_vap_in_mld(unsigned int mld_id, unsigned int vap_id)
-{
-    switch (vap_id)
-    {
-        case 1:
-        case 2:
-            return mld_id * 2 + vap_id - 1;
-        case 3:
-            return mld_id + 16;
-        default:
-            return -1;
-    }
-
-    return -1;
-}
-
 int get_mld_addr_by_id(unsigned int apmld_index, char *mac)
 {
     wifi_mgr_t *g_wifi_mgr = get_wifimgr_obj();

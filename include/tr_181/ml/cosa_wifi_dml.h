@@ -65,85 +65,6 @@
 #ifndef  _COSA_WIFI_DML_H
 #define  _COSA_WIFI_DML_H
 
-
-/***********************************************************************
-
- APIs for Object:
-
-    Device.WiFi.DataElements.Network.Device.{i}.Radio.{i}.
-
-    *  MLO_Radio_GetEntryCount
-    *  MLO_Radio_GetEntry
-
-***********************************************************************/
-ULONG
-MLO_Radio_GetEntryCount
-    (
-        ANSC_HANDLE                 hInsContext
-    );
-
-ANSC_HANDLE
-MLO_Radio_GetEntry
-    (
-        ANSC_HANDLE                 hInsContext,
-        ULONG                       nIndex,
-        ULONG*                      pInsNumber
-    );
-
-/***********************************************************************
-
- APIs for Object:
-
-    Device.WiFi.DataElements.Network.Device.{i}.Radio.{i}.Capabilities.WiFi7APRole
-
-    *  WiFi7APRole_GetParamBoolValue
-    *  WiFi7APRole_SetParamBoolValue
-
-***********************************************************************/
-
-BOOL
-WiFi7APRole_GetParamBoolValue
-    (
-        ANSC_HANDLE                 hInsContext,
-        char*                       ParamName,
-        BOOL*                       pBool
-    );
-
-BOOL
-WiFi7APRole_SetParamBoolValue
-    (
-        ANSC_HANDLE                 hInsContext,
-        char*                       ParamName,
-        BOOL                        bValue
-    );
-
-/***********************************************************************
-
- APIs for Object:
-
-    Device.WiFi.DataElements.Network.Device.{i}.Radio.{i}.Capabilities.WiFi7bSTARole
-
-    *  WiFi7bSTARole_GetParamBoolValue
-    *  WiFi7bSTARole_SetParamBoolValue
-
-***********************************************************************/
-
-BOOL
-WiFi7bSTARole_GetParamBoolValue
-    (
-        ANSC_HANDLE                 hInsContext,
-        char*                       ParamName,
-        BOOL*                       pBool
-    );
-
-BOOL
-WiFi7bSTARole_SetParamBoolValue
-    (
-        ANSC_HANDLE                 hInsContext,
-        char*                       ParamName,
-        BOOL                        bValue
-    );
-
 /***********************************************************************
 
  APIs for Object:
@@ -152,8 +73,6 @@ WiFi7bSTARole_SetParamBoolValue
 
     *  APMLD_GetParamUlongValue
     *  APMLD_GetParamStringValue
-    *  APMLD_SetParamUlongValue
-    *  APMLD_SetParamStringValue
 
 ***********************************************************************/
 /**********************************************************************  
@@ -237,69 +156,6 @@ APMLD_GetParamStringValue
         char*                       ParamName,
         char*                       pValue,
         ULONG*                      pUlSize
-    );
-
-BOOL
-APMLD_SetParamUlongValue
-    (
-        ANSC_HANDLE                 hInsContext,
-        char*                       ParamName,
-        ULONG                       uValue
-    );
-
-BOOL
-APMLD_SetParamStringValue
-    (
-        ANSC_HANDLE                 hInsContext,
-        char*                       ParamName,
-        char*                       pString
-    );
-
-BOOL
-APMLD_Validate
-    (
-        ANSC_HANDLE                 hInsContext,
-        char*                       pReturnParamName,
-        ULONG*                      puLength
-    );
-
-ULONG
-APMLD_Commit
-    (
-        ANSC_HANDLE                 hInsContext
-    );
-
-ULONG
-APMLD_Rollback
-    (
-        ANSC_HANDLE                 hInsContext
-    );
-
-/***********************************************************************
-
- APIs for Object:
-
-    Device.WiFi.DataElements.Network.Device.{i}.APMLD.{i}.APMLDConfig.
-
-    *  APMLDConfig_GetParamBoolValue
-    *  APMLDConfig_SetParamBoolValue
-
-***********************************************************************/
-
-BOOL
-APMLDConfig_GetParamBoolValue
-    (
-        ANSC_HANDLE                 hInsContext,
-        char*                       ParamName,
-        BOOL*                       pBool
-    );
-
-BOOL
-APMLDConfig_SetParamBoolValue
-    (
-        ANSC_HANDLE                 hInsContext,
-        char*                       ParamName,
-        BOOL                        bValue
     );
 
 /***********************************************************************
@@ -412,102 +268,6 @@ AffiliatedAP_SetParamStringValue
         ANSC_HANDLE                 hInsContext,
         char*                       ParamName,
         char*                       pString
-    );
-
-/***********************************************************************
-
- APIs for Object:
-
-    Device.WiFi.DataElements.Network.Device.{i}.APMLD.{i}.STAMLD.{i}.
-
-    *  STAMLD_GetParamStringValue
-    *  STAMLD_SetParamStringValue
-
-***********************************************************************/
-ULONG
-STAMLD_GetEntryCount
-    (
-        ANSC_HANDLE                 hInsContext
-    );
-
-ANSC_HANDLE
-STAMLD_GetEntry
-    (
-        ANSC_HANDLE                 hInsContext,
-        ULONG                       nIndex,
-        ULONG*                      pInsNumber
-    );
-
-ULONG
-STAMLD_GetParamStringValue
-    (
-        ANSC_HANDLE                 hInsContext,
-        char*                       ParamName,
-        char*                       pValue,
-        ULONG*                      pUlSize
-    );
-
-BOOL
-STAMLD_SetParamStringValue
-    (
-        ANSC_HANDLE                 hInsContext,
-        char*                       ParamName,
-        char*                       pString
-    );
-
-/***********************************************************************
-
- APIs for Object:
-
-    Device.WiFi.DataElements.Network.Device.{i}.bSTAMLD.
-
-    *  bSTAMLD_GetParamStringValue
-    *  bSTAMLD_SetParamStringValue
-
-***********************************************************************/
-
-ULONG
-bSTAMLD_GetParamStringValue
-    (
-        ANSC_HANDLE                 hInsContext,
-        char*                       ParamName,
-        char*                       pValue,
-        ULONG*                      pUlSize
-    );
-
-BOOL
-bSTAMLD_SetParamStringValue
-    (
-        ANSC_HANDLE                 hInsContext,
-        char*                       ParamName,
-        char*                       pString
-    );
-
-/***********************************************************************
-
- APIs for Object:
-
-    Device.WiFi.DataElements.Network.Device.{i}.bSTAMLD.bSTAMLDConfig.
-
-    *  bSTAMLDConfig_GetParamBoolValue
-    *  bSTAMLDConfig_SetParamBoolValue
-
-***********************************************************************/
-
-BOOL
-bSTAMLDConfig_GetParamBoolValue
-    (
-        ANSC_HANDLE                 hInsContext,
-        char*                       ParamName,
-        BOOL*                       pBool
-    );
-
-BOOL
-bSTAMLDConfig_SetParamBoolValue
-    (
-        ANSC_HANDLE                 hInsContext,
-        char*                       ParamName,
-        BOOL                        bValue
     );
 
 /***********************************************************************

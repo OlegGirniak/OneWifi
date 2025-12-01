@@ -1851,7 +1851,7 @@ void create_mld_map(char* mld_map, int *mld_count)
             wifi_vap_info_t *vap_config = &mgr_vap_info_map->vap_array[k];
             wifi_mld_common_info_t *mld_info = &vap_config->u.bss_info.mld_info.common_info;
 
-            if (mld_info->mld_enable && mld_info->mld_id != 0) {
+            if (mld_info->mld_enable) {
                 unsigned int id = mld_info->mld_id;
 
                 wifi_util_info_print(WIFI_DMCLI, "%s:%d Found MLD ID: %u on radio %u vap %u\n", __func__, __LINE__, id, r_idx, k);
