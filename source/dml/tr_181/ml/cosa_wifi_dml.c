@@ -192,6 +192,436 @@ static inline bool is_enterprise_sec(wifi_security_modes_t mode)
         mode == wifi_security_mode_wpa3_enterprise;
 }
 
+ANSC_HANDLE
+Device_GetEntry
+    (
+        ANSC_HANDLE                 hInsContext,
+        ULONG                       nIndex,
+        ULONG*                      pInsNumber
+    )
+{
+    wifi_util_info_print(WIFI_DMCLI, "%s:%d Device_GetEntry called\n", __func__, __LINE__);
+
+    *pInsNumber = nIndex + 1;
+
+    return (ANSC_HANDLE) (nIndex + 1);
+}
+
+ULONG
+Device_GetEntryCount
+    (
+        ANSC_HANDLE                 hInsContext
+    )
+{
+
+    wifi_util_info_print(WIFI_DMCLI, "%s:%d Device_GetEntryCount called\n", __func__, __LINE__);
+
+    UNREFERENCED_PARAMETER(hInsContext);
+
+    wifi_util_info_print(WIFI_DMCLI, "%s:%d Device_GetEntryCount ended\n", __func__, __LINE__);
+
+    return 1;
+}
+
+/***********************************************************************
+
+ APIs for Object:
+
+    Device.WiFi.DataElements.Network.Device.{i}.APMLD.{i}.
+
+    *  APMLD_GetEntryCount
+    *  APMLD_GetEntry
+    *  APMLD_GetParamUlongValue
+    *  APMLD_GetParamStringValue
+
+***********************************************************************/
+/**********************************************************************  
+
+    caller:     owner of this object 
+
+    prototype: 
+
+        ULONG
+        APMLD_GetEntryCount
+            (
+                ANSC_HANDLE                 hInsContext
+            );
+
+    description:
+
+        This function is called to retrieve the count of the table.
+
+    argument:   ANSC_HANDLE                 hInsContext,
+                The instance handle;
+
+    return:     The count of the table
+
+**********************************************************************/
+ULONG
+APMLD_GetEntryCount
+    (
+        ANSC_HANDLE                 hInsContext
+    )
+{
+
+    wifi_util_info_print(WIFI_DMCLI, "%s:%d APMLD_GetEntryCount called\n", __func__, __LINE__);
+
+    UNREFERENCED_PARAMETER(hInsContext);
+
+    unsigned long count = 0;
+
+    count  = get_total_num_apmld_dml();
+
+    wifi_util_info_print(WIFI_DMCLI, "%s:%d APMLD_GetEntryCount ended\n", __func__, __LINE__);
+
+    return count;
+}
+
+/**********************************************************************  
+
+    caller:     owner of this object 
+
+    prototype: 
+
+        ANSC_HANDLE
+        APMLD_GetEntry
+            (
+                ANSC_HANDLE                 hInsContext,
+                ULONG                       nIndex,
+                ULONG*                      pInsNumber
+            );
+
+    description:
+
+        This function is called to retrieve the entry specified by the index.
+
+    argument:   ANSC_HANDLE                 hInsContext,
+                The instance handle;
+
+                ULONG                       nIndex,
+                The index of this entry;
+
+                ULONG*                      pInsNumber
+                The output instance number;
+
+    return:     The handle to identify the entry
+
+**********************************************************************/
+ANSC_HANDLE
+APMLD_GetEntry
+    (
+        ANSC_HANDLE                 hInsContext,
+        ULONG                       nIndex,
+        ULONG*                      pInsNumber
+    )
+{
+
+    wifi_util_info_print(WIFI_DMCLI, "%s:%d APMLD_GetEntry called\n", __func__, __LINE__);
+
+    UNREFERENCED_PARAMETER(hInsContext);
+
+    char mld_id_map[MLD_UNIT_COUNT] = {0};
+    int count;
+
+    create_mld_map(mld_id_map, &count);
+
+    if (nIndex >= 0 && nIndex <= (UINT)get_total_num_apmld_dml()) {
+        *pInsNumber = nIndex + 1;
+
+        wifi_util_info_print(WIFI_DMCLI, "%s:%d APMLD_GetEntry ended good\n", __func__, __LINE__);
+
+        return (ANSC_HANDLE)(ULONG)(mld_id_map[nIndex]);
+    }
+
+    wifi_util_info_print(WIFI_DMCLI, "%s:%d APMLD_GetEntry ended with error\n", __func__, __LINE__);
+
+    return NULL;
+}
+
+BOOL
+APMLD_IsUpdated
+    (
+        ANSC_HANDLE                 hInsContext
+    )
+{
+    return TRUE;
+}
+
+BOOL
+APMLD_GetParamUlongValue
+    (
+        ANSC_HANDLE                 hInsContext,
+        char*                       ParamName,
+        ULONG*                      puLong
+    )
+{
+    if (AnscEqualString(ParamName, "AffiliatedAPNumberOfEntries", TRUE))
+    {
+        return TRUE;
+    }
+    if (AnscEqualString(ParamName, "STAMLDNumberOfEntries", TRUE))
+    {
+        wifi_util_dbg_print(WIFI_DMCLI,"%s:%d STAMLDNumberOfEntries\n", __FUNCTION__,__LINE__);
+        return TRUE;
+    }
+
+    return FALSE;
+}
+
+ULONG
+APMLD_GetParamStringValue
+    (
+        ANSC_HANDLE                 hInsContext,
+        char*                       ParamName,
+        char*                       pValue,
+        ULONG*                      pUlSize
+    )
+{
+
+    ULONG apmld_index = (ULONG)hInsContext - 1;
+
+    if (AnscEqualString(ParamName, "MLDMACAddress", TRUE))
+    {
+        char buff[24] = {0};
+        if (get_mld_addr_by_id(apmld_index, buff) == 0)
+        {
+            memcpy(pValue, buff, strlen(buff) + 1);
+
+            wifi_util_dbg_print(WIFI_DMCLI,"%s:%d MLDADDR: %s apmld_index %u\n", __FUNCTION__,__LINE__, pValue, apmld_index);
+            return 0;
+        }
+        wifi_util_dbg_print(WIFI_DMCLI,"%s:%d MLDADDR: ERROR apmld_index %u\n", __FUNCTION__,__LINE__, apmld_index);
+        return -1;
+    }
+
+    return -1;
+}
+
+/***********************************************************************
+
+ APIs for Object:
+
+    Device.WiFi.DataElements.Network.Device.{i}.APMLD.{i}.AffiliatedAP.{i}.
+
+    *  AffiliatedAP_GetEntryCount
+    *  AffiliatedAP_GetEntry
+    *  AffiliatedAP_GetParamUlongValue
+    *  AffiliatedAP_GetParamStringValue
+    *  AffiliatedAP_SetParamUlongValue
+    *  AffiliatedAP_SetParamStringValue
+
+***********************************************************************/
+/**********************************************************************  
+
+    caller:     owner of this object 
+
+    prototype: 
+
+        ULONG
+        APMLD_GetEntryCount
+            (
+                ANSC_HANDLE                 hInsContext
+            );
+
+    description:
+
+        This function is called to retrieve the count of the table.
+
+    argument:   ANSC_HANDLE                 hInsContext,
+                The instance handle;
+
+    return:     The count of the table
+
+**********************************************************************/
+ULONG
+AffiliatedAP_GetEntryCount
+    (
+        ANSC_HANDLE                 hInsContext
+    )
+{
+    wifi_util_info_print(WIFI_DMCLI, "%s:%d AffiliatedAP_GetEntryCount called\n", __func__, __LINE__);
+
+    ULONG mld_id = (ULONG)hInsContext;
+
+    return get_total_num_affiliated_ap_dml(mld_id);
+}
+
+/**********************************************************************  
+
+    caller:     owner of this object 
+
+    prototype: 
+
+        ANSC_HANDLE
+        APMLD_GetEntry
+            (
+                ANSC_HANDLE                 hInsContext,
+                ULONG                       nIndex,
+                ULONG*                      pInsNumber
+            );
+
+    description:
+
+        This function is called to retrieve the entry specified by the index.
+
+    argument:   ANSC_HANDLE                 hInsContext,
+                The instance handle;
+
+                ULONG                       nIndex,
+                The index of this entry;
+
+                ULONG*                      pInsNumber
+                The output instance number;
+
+    return:     The handle to identify the entry
+
+**********************************************************************/
+ANSC_HANDLE
+AffiliatedAP_GetEntry
+    (
+        ANSC_HANDLE                 hInsContext,
+        ULONG                       nIndex,
+        ULONG*                      pInsNumber
+    )
+{
+    wifi_util_info_print(WIFI_DMCLI, "%s:%d AffiliatedAP_GetEntry called\n", __func__, __LINE__);
+
+    UNREFERENCED_PARAMETER(hInsContext);
+
+    char mld_id_map[MLD_UNIT_COUNT];
+    int count;
+
+    create_mld_map(mld_id_map, &count);
+
+    if (nIndex >= 0 && nIndex <= (UINT)get_total_num_apmld_dml()) {
+        *pInsNumber = nIndex + 1;
+        wifi_util_info_print(WIFI_DMCLI, "%s:%d AffiliatedAP_GetEntry ended good\n", __func__, __LINE__);
+        return (ANSC_HANDLE)(ULONG)(mld_id_map[nIndex]);
+    }
+
+    wifi_util_info_print(WIFI_DMCLI, "%s:%d AffiliatedAP_GetEntry ended with error\n", __func__, __LINE__);
+
+    return NULL;
+}
+
+BOOL
+AffiliatedAP_GetParamUlongValue
+    (
+        ANSC_HANDLE                 hInsContext,
+        char*                       ParamName,
+        ULONG*                      puLong
+    )
+{
+    ULONG vap_index = (ULONG)hInsContext - 1;
+
+    wifi_vap_info_t *vap = (wifi_vap_info_t *)get_dml_vap_parameters(vap_index);
+
+    if (vap == NULL) {
+        wifi_util_dbg_print(WIFI_DMCLI,"%s:%d: vap is NULL\n", __func__, __LINE__);
+        return FALSE;
+    }
+
+    if (AnscEqualString(ParamName, "LinkID", TRUE))
+    {
+        if (isVapSTAMesh(vap_index))
+        {
+            *puLong = vap->u.sta_info.mld_info.common_info.mld_link_id;
+            return TRUE;
+        }
+
+        *puLong = vap->u.bss_info.mld_info.common_info.mld_link_id;
+
+        return TRUE;
+    }
+
+    if (AnscEqualString(ParamName, "DisabledSubChannels", TRUE))
+    {
+        return TRUE;
+    }
+
+    return FALSE;
+}
+
+ULONG
+AffiliatedAP_GetParamStringValue
+    (
+        ANSC_HANDLE                 hInsContext,
+        char*                       ParamName,
+        char*                       pValue,
+        ULONG*                      pUlSize
+    )
+{
+    ULONG vap_index = (ULONG)hInsContext - 1;
+
+    wifi_vap_info_t *vap = (wifi_vap_info_t *)get_dml_vap_parameters(vap_index);
+
+    if (vap == NULL) {
+        wifi_util_dbg_print(WIFI_DMCLI,"%s:%d: vap is NULL\n", __func__, __LINE__);
+        return FALSE;
+    }
+
+    if (AnscEqualString(ParamName, "BSSID", TRUE))
+    {
+        char buff[24] = {0};
+
+        if (isVapSTAMesh(vap->vap_index)) {
+            _ansc_sprintf
+            (
+                buff,
+                "%02X:%02X:%02X:%02X:%02X:%02X",
+                vap->u.sta_info.bssid[0],
+                vap->u.sta_info.bssid[1],
+                vap->u.sta_info.bssid[2],
+                vap->u.sta_info.bssid[3],
+                vap->u.sta_info.bssid[4],
+                vap->u.sta_info.bssid[5]
+            );
+        } 
+        else 
+        {
+            _ansc_sprintf
+            (
+                buff,
+                "%02X:%02X:%02X:%02X:%02X:%02X",
+                vap->u.bss_info.bssid[0],
+                vap->u.bss_info.bssid[1],
+                vap->u.bss_info.bssid[2],
+                vap->u.bss_info.bssid[3],
+                vap->u.bss_info.bssid[4],
+                vap->u.bss_info.bssid[5]
+            );
+        }
+
+        memcpy(pValue, buff, strlen(buff) + 1);
+
+        return 0;
+    }
+
+    return -1;
+}
+
+BOOL
+AffiliatedAP_SetParamUlongValue
+    (
+        ANSC_HANDLE                 hInsContext,
+        char*                       ParamName,
+        ULONG                       uValue
+    )
+{
+    return FALSE;
+}
+
+BOOL
+AffiliatedAP_SetParamStringValue
+    (
+        ANSC_HANDLE                 hInsContext,
+        char*                       ParamName,
+        char*                       pString
+    )
+{
+    return FALSE;
+}
+
 /***********************************************************************
 
  APIs for Object:

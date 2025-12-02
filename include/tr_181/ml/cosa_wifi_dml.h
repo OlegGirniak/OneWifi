@@ -65,6 +65,168 @@
 #ifndef  _COSA_WIFI_DML_H
 #define  _COSA_WIFI_DML_H
 
+ANSC_HANDLE
+Device_GetEntry
+    (
+        ANSC_HANDLE                 hInsContext,
+        ULONG                       nIndex,
+        ULONG*                      pInsNumber
+    );
+
+ULONG
+Device_GetEntryCount
+    (
+        ANSC_HANDLE                 hInsContext
+    );
+
+/***********************************************************************
+ APIs for Object:
+    Device.WiFi.DataElements.Network.Device.{i}.APMLD.{i}.
+    *  APMLD_GetEntryCount
+    *  APMLD_GetEntry
+
+**********************************************************************/
+ULONG
+APMLD_GetEntryCount
+    (
+        ANSC_HANDLE                 hInsContext
+    );
+
+/**********************************************************************  
+    caller:     owner of this object 
+    prototype: 
+        ANSC_HANDLE
+        APMLD_GetEntry
+            (
+                ANSC_HANDLE                 hInsContext,
+                ULONG                       nIndex,
+                ULONG*                      pInsNumber
+            );
+    description:
+        This function is called to retrieve the entry specified by the index.
+    argument:   ANSC_HANDLE                 hInsContext,
+                The instance handle;
+                ULONG                       nIndex,
+                The index of this entry;
+                ULONG*                      pInsNumber
+                The output instance number;
+    return:     The handle to identify the entry
+**********************************************************************/
+ANSC_HANDLE
+APMLD_GetEntry
+    (
+        ANSC_HANDLE                 hInsContext,
+        ULONG                       nIndex,
+        ULONG*                      pInsNumber
+    );
+
+BOOL
+APMLD_GetParamUlongValue
+    (
+        ANSC_HANDLE                 hInsContext,
+        char*                       ParamName,
+        ULONG*                      puLong
+    );
+
+ULONG
+APMLD_GetParamStringValue
+    (
+        ANSC_HANDLE                 hInsContext,
+        char*                       ParamName,
+        char*                       pValue,
+        ULONG*                      pUlSize
+    );
+
+/***********************************************************************
+ APIs for Object:
+    Device.WiFi.DataElements.Network.Device.{i}.APMLD.{i}.AffiliatedAP.{i}.
+    *  AffiliatedAP_GetParamUlongValue
+    *  AffiliatedAP_GetParamStringValue
+    *  AffiliatedAP_SetParamUlongValue
+    *  AffiliatedAP_SetParamStringValue
+***********************************************************************/
+/**********************************************************************  
+    caller:     owner of this object 
+    prototype: 
+        ULONG
+        APMLD_GetEntryCount
+            (
+                ANSC_HANDLE                 hInsContext
+            );
+    description:
+        This function is called to retrieve the count of the table.
+    argument:   ANSC_HANDLE                 hInsContext,
+                The instance handle;
+    return:     The count of the table
+**********************************************************************/
+ULONG
+AffiliatedAP_GetEntryCount
+    (
+        ANSC_HANDLE                 hInsContext
+    );
+
+/**********************************************************************  
+    caller:     owner of this object 
+    prototype: 
+        ANSC_HANDLE
+        AffiliatedAP_GetEntry
+            (
+                ANSC_HANDLE                 hInsContext,
+                ULONG                       nIndex,
+                ULONG*                      pInsNumber
+            );
+    description:
+        This function is called to retrieve the entry specified by the index.
+    argument:   ANSC_HANDLE                 hInsContext,
+                The instance handle;
+                ULONG                       nIndex,
+                The index of this entry;
+                ULONG*                      pInsNumber
+                The output instance number;
+    return:     The handle to identify the entry
+**********************************************************************/
+ANSC_HANDLE
+AffiliatedAP_GetEntry
+    (
+        ANSC_HANDLE                 hInsContext,
+        ULONG                       nIndex,
+        ULONG*                      pInsNumber
+    );
+
+
+BOOL
+AffiliatedAP_GetParamUlongValue
+    (
+        ANSC_HANDLE                 hInsContext,
+        char*                       ParamName,
+        ULONG*                      puLong
+    );
+
+ULONG
+AffiliatedAP_GetParamStringValue
+    (
+        ANSC_HANDLE                 hInsContext,
+        char*                       ParamName,
+        char*                       pValue,
+        ULONG*                      pUlSize
+    );
+
+BOOL
+AffiliatedAP_SetParamUlongValue
+    (
+        ANSC_HANDLE                 hInsContext,
+        char*                       ParamName,
+        ULONG                       uValue
+    );
+
+BOOL
+AffiliatedAP_SetParamStringValue
+    (
+        ANSC_HANDLE                 hInsContext,
+        char*                       ParamName,
+        char*                       pString
+    );
+
 /***********************************************************************
 
  APIs for Object:
